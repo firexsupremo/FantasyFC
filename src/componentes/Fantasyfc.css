@@ -1,0 +1,133 @@
+/* Fuente y Fondo */
+.fantasyfc-container {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #f0f0f0 0%, #9ef883 100%);
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  color: #333;
+}
+
+/* Encabezado */
+.fantasyfc-container h1 {
+  color: #2e7d32; /* Verde oscuro */
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+
+.player-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 300px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #2e7d32;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, transparent 48%, #2e7d32 48%, #2e7d32 52%, transparent 52%);
+  background-size: 20px 20px;
+  opacity: 0.1;
+  z-index: -1;
+}
+
+.player-card h2 {
+  color: #d32f2f; /* Rojo */
+  margin: 10px 0;
+}
+
+/* Bandera y Rank */
+.player-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.player-flag {
+  width: 40px;
+  height: 25px;
+  object-fit: cover;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.player-rank {
+  background: #2e7d32;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* Stats del Jugador */
+.player-stats p {
+  margin: 8px 0;
+  font-size: 1.1rem;
+}
+
+.player-stats strong {
+  color: #2e7d32;
+}
+
+/* Stats del Usuario */
+.user-stats {
+  background: rgba(46, 125, 50, 0.1);
+  border-radius: 10px;
+  padding: 30px;
+  margin: 25px auto;
+  max-width: 300px;
+  border-left: 4px solid #2e7d32;
+}
+
+.user-stats p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+/* Menú Inferior (Estilo "Cancha") */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: rgba(46, 125, 50, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  border-top: 2px dashed #2e7d32;
+}
+
+.menu-btn {
+  background: linear-gradient(to bottom, #2e7d32, #1b5e20);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.menu-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+/* Efectos de Texto */
+strong {
+  color: #1b5e20;
+}
