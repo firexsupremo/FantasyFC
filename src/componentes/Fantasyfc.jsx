@@ -11,14 +11,18 @@ const Fantasyfc = ({ user }) => {
     points: 0,
     value: "0M"
   });
-  
+
   const [userData, setUserData] = useState({
     puntos: 1200,
     presupuesto: 100
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [vista, setVista] = useState('principal'); // 'principal' | 'liga' | 'crearLiga'
+  const [liga, setLiga] = useState(null); // { nombre, propietario, puntos }
+  const [formLiga, setFormLiga] = useState({ nombre: '', propietario: '' });
 
   useEffect(() => {
     const fetchTopPlayer = async () => {
@@ -28,11 +32,11 @@ const Fantasyfc = ({ user }) => {
             'X-Auth-Token': 'ad226066046e8b2dcbcacd60ee671495'
           }
         });
-        
+
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-        
+
         const data = await response.json();
-        
+
         if (data.scorers?.length > 0) {
           const topScorer = data.scorers[0];
           setTopPlayer({
@@ -82,6 +86,21 @@ const Fantasyfc = ({ user }) => {
     }
   };
 
+  const handleCrearLiga = () => {
+    setVista('crearLiga');
+  };
+
+  const handleGuardarLiga = () => {
+    const nuevaLiga = {
+      nombre: formLiga.nombre,
+      propietario: formLiga.propietario,
+      puntos: 0
+    };
+    setLiga(nuevaLiga);
+    setFormLiga({ nombre: '', propietario: '' });
+    setVista('principal');
+  };
+
   if (loading) {
     return (
       <div className="fantasyfc-container">
@@ -104,36 +123,80 @@ const Fantasyfc = ({ user }) => {
           Cerrar Sesión
         </button>
       </div>
-      
-      {error && <div className="error-message">{error}</div>}
-      
-      <div className="player-card">
-        <div className="player-header">
-          <span className="player-rank">#1</span>
-          <img 
-            src={`https://flagcdn.com/w40/${topPlayer.countryCode}.png`} 
-            alt={topPlayer.countryCode}
-            className="player-flag"
-            onError={(e) => {
-              e.target.src = 'https://flagcdn.com/w40/us.png';
-            }}
-          />
-        </div>
-        <h2>{topPlayer.name}</h2>
-        <div className="player-stats">
-          <p><strong>Liga:</strong> {topPlayer.league} ({topPlayer.position})</p>
-          <p><strong>Puntos:</strong> ⭐ {topPlayer.points}</p>
-          <p><strong>Valor:</strong> ${topPlayer.value}</p>
-        </div>
-      </div>
 
-      <div className="user-stats">
-        <p><strong>Mis puntos:</strong> {userData.puntos}</p>
-        <p><strong>Mi presupuesto:</strong> ${userData.presupuesto}M</p>
-      </div>
+      {error && <div className="error-message">{error}</div>}
+
+      {vista === 'principal' && (
+        <>
+          <div className="player-card">
+            <div className="player-header">
+              <span className="player-rank">#1</span>
+              <img
+                src={`https://flagcdn.com/w40/${topPlayer.countryCode}.png`}
+                alt={topPlayer.countryCode}
+                className="player-flag"
+                onError={(e) => {
+                  e.target.src = 'https://flagcdn.com/w40/us.png';
+                }}
+              />
+            </div>
+            <h2>{topPlayer.name}</h2>
+            <div className="player-stats">
+              <p><strong>Liga:</strong> {topPlayer.league} ({topPlayer.position})</p>
+              <p><strong>Puntos:</strong> ⭐ {topPlayer.points}</p>
+              <p><strong>Valor:</strong> ${topPlayer.value}</p>
+            </div>
+          </div>
+
+          <div className="user-stats">
+            <p><strong>Mis puntos:</strong> {userData.puntos}</p>
+            <p><strong>Mi presupuesto:</strong> ${userData.presupuesto}M</p>
+          </div>
+        </>
+      )}
+
+      {vista === 'liga' && (
+        <div className="liga-card player-card">
+          {liga ? (
+            <>
+              <h2>{liga.nombre}</h2>
+              <p><strong>Propietario:</strong> {liga.propietario}</p>
+              <p><strong>Puntos de la liga:</strong> ⭐ {liga.puntos}</p>
+              <p><strong>Jugadores en propiedad:</strong> 0</p>
+            </>
+          ) : (
+            <button className="menu-btn" onClick={handleCrearLiga}>
+              Crear liga
+            </button>
+          )}
+        </div>
+      )}
+
+      {vista === 'crearLiga' && (
+        <div className="liga-card player-card">
+          <h2>Crear nueva liga</h2>
+          <input
+            type="text"
+            placeholder="Nombre de la liga"
+            value={formLiga.nombre}
+            onChange={(e) => setFormLiga({ ...formLiga, nombre: e.target.value })}
+            className="input-field"
+          />
+          <input
+            type="text"
+            placeholder="Nombre del propietario"
+            value={formLiga.propietario}
+            onChange={(e) => setFormLiga({ ...formLiga, propietario: e.target.value })}
+            className="input-field"
+          />
+          <button className="menu-btn" onClick={handleGuardarLiga}>
+            Guardar
+          </button>
+        </div>
+      )}
 
       <div className="menu-grid">
-        <button className="menu-btn">Mi liga</button>
+        <button className="menu-btn" onClick={() => setVista('liga')}>Mi liga</button>
         <button className="menu-btn">Mis jugadores</button>
         <button className="menu-btn">Comprar jugadores</button>
         <button className="menu-btn">Vender jugadores</button>

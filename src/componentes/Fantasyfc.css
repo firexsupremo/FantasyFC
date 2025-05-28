@@ -131,3 +131,18 @@
 strong {
   color: #1b5e20;
 }
+
+.input-field {
+  width: 90%;
+  padding: 10px;
+  margin: 10px auto;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: block;
+}
+
+.liga-card h2 {
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
