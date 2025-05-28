@@ -146,3 +146,15 @@ strong {
   color: #2e7d32;
   margin-bottom: 15px;
 }
+
+
+
+.volver-btn {
+  background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.volver-btn:hover {
+  background: linear-gradient(to bottom, #5a6268, #4a5258) !important;
+}

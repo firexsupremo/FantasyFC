@@ -13,15 +13,15 @@ const Fantasyfc = ({ user }) => {
   });
 
   const [userData, setUserData] = useState({
-    puntos: 1200,
-    presupuesto: 100
+    puntos: 0,
+    presupuesto: 5000
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [vista, setVista] = useState('principal'); // 'principal' | 'liga' | 'crearLiga'
-  const [liga, setLiga] = useState(null); // { nombre, propietario, puntos }
+  const [vista, setVista] = useState('principal');
+  const [liga, setLiga] = useState(null);
   const [formLiga, setFormLiga] = useState({ nombre: '', propietario: '' });
 
   useEffect(() => {
@@ -119,9 +119,6 @@ const Fantasyfc = ({ user }) => {
     <div className="fantasyfc-container">
       <div className="header">
         <h1>FANTASY FC</h1>
-        <button onClick={handleLogout} className="logout-btn">
-          Cerrar Sesión
-        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -163,6 +160,13 @@ const Fantasyfc = ({ user }) => {
               <p><strong>Propietario:</strong> {liga.propietario}</p>
               <p><strong>Puntos de la liga:</strong> ⭐ {liga.puntos}</p>
               <p><strong>Jugadores en propiedad:</strong> 0</p>
+              <button 
+                className="menu-btn" 
+                onClick={() => setVista('principal')}
+                style={{ marginTop: '20px' }}
+              >
+                Regresar al menú principal
+              </button>
             </>
           ) : (
             <button className="menu-btn" onClick={handleCrearLiga}>
@@ -201,6 +205,14 @@ const Fantasyfc = ({ user }) => {
         <button className="menu-btn">Comprar jugadores</button>
         <button className="menu-btn">Vender jugadores</button>
       </div>
+
+      <button 
+        onClick={handleLogout} 
+        className="menu-btn logout-btn"
+        style={{ marginTop: '20px', width: '100%', maxWidth: '400px' }}
+      >
+        Cerrar Sesión
+      </button>
     </div>
   );
 };
