@@ -5,9 +5,17 @@ import './Autenticacion.css';
 const Autenticacion = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [modo, setModo] = useState('iniciar'); // 'iniciar' o 'registrar'
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [modo, setModo] = useState('iniciar');
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
+
+  const validarPassword = (pass) => {
+    if (pass.length < 6) return "La contraseña debe tener al menos 6 caracteres";
+    if (!/[A-Z]/.test(pass)) return "Debe contener al menos una mayúscula";
+    if (!/[0-9]/.test(pass)) return "Debe contener al menos un número";
+    return null;
+  };
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -15,21 +23,25 @@ const Autenticacion = () => {
     setError(null);
 
     try {
+      if (modo === 'registrar') {
+        if (password !== confirmPassword) {
+          throw new Error('Las contraseñas no coinciden');
+        }
+        
+        const passwordError = validarPassword(password);
+        if (passwordError) {
+          throw new Error(passwordError);
+        }
+      }
+
       if (modo === 'iniciar') {
-        // Iniciar sesión
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        // Registrarse
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         alert('¡Registro exitoso! Por favor verifica tu correo electrónico.');
+        setModo('iniciar'); // Cambiar a login después de registro
       }
     } catch (error) {
       setError(error.message);
@@ -84,9 +96,22 @@ const Autenticacion = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="••••••••"
-            minLength="6"
           />
         </div>
+
+        {modo === 'registrar' && (
+          <div className="grupo-formulario">
+            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+            />
+          </div>
+        )}
         
         <button 
           type="submit" 

@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div className="app">
-      {user ? <Fantasyfc /> : <Autenticacion />}
+      {user ? <Fantasyfc user={user} /> : <Autenticacion />}
     </div>
   );
 }

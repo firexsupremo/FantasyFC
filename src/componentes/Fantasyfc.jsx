@@ -4,7 +4,7 @@ import './Fantasyfc.css';
 import jugadoresData from './jugadoresData/jugadores.json'; 
 
 const Fantasyfc = ({ user }) => {
-  // Estado inicial
+  // Estados iniciales
   const [topPlayer, setTopPlayer] = useState({
     name: "Cargando...",
     countryCode: "us",
@@ -14,54 +14,76 @@ const Fantasyfc = ({ user }) => {
     value: "0M"
   });
 
-  const [userData, setUserData] = useState({ 
-    puntos: 0, 
-    presupuesto: 5000,
-    liga: null,
-    misJugadores: []
+  const [userData, setUserData] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem(`fantasyfc-data-${user?.email}`)) || { 
+      puntos: 0, 
+      presupuesto: 5000,
+      liga: null,
+      misJugadores: []
+    };
+    return saved;
   });
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [vista, setVista] = useState('principal');
+  const [vista, setVista] = useState(() => {
+    return localStorage.getItem('fantasyfc-vista') || 'principal';
+  });
   const [formLiga, setFormLiga] = useState({ nombre: '', propietario: '' });
   const [jugadores, setJugadores] = useState([]);
   const [confirmarCompra, setConfirmarCompra] = useState({ mostrar: false, jugador: null });
-  const [filtroPosicion, setFiltroPosicion] = useState('todos');
+  const [filtrosActivos, setFiltrosActivos] = useState({
+    posicion: null,
+    orden: null
+  });
 
   // Cargar datos del usuario al iniciar
   useEffect(() => {
     const cargarDatosUsuario = async () => {
-      const { data } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', user.email)
-        .single();
-      
-      if (data) {
-        setUserData(data.datos || { 
-          puntos: 0, 
-          presupuesto: 5000,
-          liga: null,
-          misJugadores: []
-        });
+      try {
+        const { data, error } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+        
+        if (error) throw error;
+
+        if (data) {
+          const datosUsuario = data.datos || userData;
+          setUserData(datosUsuario);
+          localStorage.setItem(`fantasyfc-data-${user.email}`, JSON.stringify(datosUsuario));
+        }
+      } catch (error) {
+        setError("Error al cargar datos del usuario");
+        console.error(error);
       }
     };
 
-    cargarDatosUsuario();
-    fetchTopPlayer();
+    if (user) {
+      cargarDatosUsuario();
+      fetchTopPlayer();
+    }
   }, [user]);
 
   // Guardar datos del usuario al cambiar
   useEffect(() => {
     const guardarDatosUsuario = async () => {
-      await supabase
-        .from('usuarios')
-        .upsert({
-          email: user.email,
-          datos: userData,
-          updated_at: new Date()
-        });
+      try {
+        localStorage.setItem(`fantasyfc-data-${user.email}`, JSON.stringify(userData));
+        
+        const { error } = await supabase
+          .from('usuarios')
+          .upsert({
+            email: user.email,
+            datos: userData,
+            updated_at: new Date()
+          });
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error("Error al guardar datos:", error);
+      }
     };
 
     if (user) {
@@ -69,12 +91,19 @@ const Fantasyfc = ({ user }) => {
     }
   }, [userData, user]);
 
+  // Guardar vista actual
+  useEffect(() => {
+    localStorage.setItem('fantasyfc-vista', vista);
+  }, [vista]);
+
   const fetchTopPlayer = async () => {
     try {
       const response = await fetch('https://api.football-data.org/v4/competitions/PL/scorers', {
         headers: { 'X-Auth-Token': 'ad226066046e8b2dcbcacd60ee671495' }
       });
+      
       if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+      
       const data = await response.json();
       if (data.scorers?.length > 0) {
         const topScorer = data.scorers[0];
@@ -88,7 +117,7 @@ const Fantasyfc = ({ user }) => {
         });
       }
     } catch (apiError) {
-      setError(".");
+      setError("");
       setTopPlayer({ 
         name: "Erling Haaland", 
         countryCode: "no", 
@@ -112,49 +141,56 @@ const Fantasyfc = ({ user }) => {
     return map[nationality]?.toLowerCase() || 'us';
   };
 
-  // Cargar jugadores disponibles (quitando los que ya compró)
+  // Cargar jugadores disponibles
   useEffect(() => {
     if (vista === 'comprar') {
-      const jugadoresDisponibles = jugadoresData.filter(jugador => 
-        !userData.misJugadores.some(mj => mj.id === jugador.id)
-      );
-      setJugadores(jugadoresDisponibles);
+      aplicarFiltros();
     }
-  }, [vista, userData.misJugadores]);
+  }, [vista, userData.misJugadores, filtrosActivos]);
 
-  const aplicarFiltro = (tipo) => {
-    let jugadoresFiltrados = [...jugadores];
-    
+  const aplicarFiltros = () => {
+    let jugadoresFiltrados = jugadoresData.filter(jugador => 
+      !userData.misJugadores.some(mj => mj.id === jugador.id)
+    );
+
     // Filtro por posición
-    if (filtroPosicion !== 'todos') {
-      jugadoresFiltrados = jugadoresFiltrados.filter(j => j.posicion === filtroPosicion);
+    if (filtrosActivos.posicion) {
+      jugadoresFiltrados = jugadoresFiltrados.filter(j => j.posicion === filtrosActivos.posicion);
     }
-    
+
     // Ordenamiento
-    switch (tipo) {
-      case 'valor-alto': 
-        jugadoresFiltrados.sort((a, b) => b.valor - a.valor); 
-        break;
-      case 'valor-bajo': 
-        jugadoresFiltrados.sort((a, b) => a.valor - b.valor); 
-        break;
-      case 'puntos-altos': 
-        jugadoresFiltrados.sort((a, b) => b.puntos - a.puntos); 
-        break;
-      case 'puntos-bajos': 
-        jugadoresFiltrados.sort((a, b) => a.puntos - b.puntos); 
-        break;
-      default:
-        // Sin ordenamiento adicional
+    if (filtrosActivos.orden) {
+      switch (filtrosActivos.orden) {
+        case 'valor-alto': 
+          jugadoresFiltrados.sort((a, b) => b.valor - a.valor); 
+          break;
+        case 'valor-bajo': 
+          jugadoresFiltrados.sort((a, b) => a.valor - b.valor); 
+          break;
+        case 'puntos-altos': 
+          jugadoresFiltrados.sort((a, b) => b.puntos - a.puntos); 
+          break;
+        case 'puntos-bajos': 
+          jugadoresFiltrados.sort((a, b) => a.puntos - b.puntos); 
+          break;
+      }
     }
     
     setJugadores(jugadoresFiltrados);
+  };
+
+  const manejarFiltro = (tipo, categoria) => {
+    setFiltrosActivos(prev => ({
+      ...prev,
+      [categoria]: prev[categoria] === tipo ? null : tipo
+    }));
   };
 
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      localStorage.removeItem('fantasyfc-vista');
     } catch (error) {
       setError('Error al cerrar sesión');
     }
@@ -163,20 +199,35 @@ const Fantasyfc = ({ user }) => {
   const handleCrearLiga = () => setVista('crearLiga');
 
   const handleGuardarLiga = () => {
+    if (!formLiga.nombre || !formLiga.propietario) {
+      setError('Debes completar todos los campos');
+      return;
+    }
+
     const nuevaLiga = { 
       nombre: formLiga.nombre, 
       propietario: formLiga.propietario, 
       puntos: userData.puntos 
     };
+    
     setUserData(prev => ({
       ...prev,
       liga: nuevaLiga
     }));
+    
     setFormLiga({ nombre: '', propietario: '' });
     setVista('principal');
+    setError(null);
   };
 
   const handleCompraJugador = () => {
+    if (!userData.liga) {
+      setError("Debes crear una liga antes de comprar jugadores");
+      setVista('crearLiga');
+      setConfirmarCompra({ mostrar: false, jugador: null });
+      return;
+    }
+
     const jugador = confirmarCompra.jugador;
     if (userData.presupuesto >= jugador.valor) {
       const nuevosPuntos = userData.puntos + jugador.puntos;
@@ -194,14 +245,19 @@ const Fantasyfc = ({ user }) => {
       
       setConfirmarCompra({ mostrar: false, jugador: null });
     } else {
-      alert("No tienes suficiente presupuesto para comprar este jugador.");
+      setError("No tienes suficiente presupuesto para comprar este jugador.");
       setConfirmarCompra({ mostrar: false, jugador: null });
     }
   };
 
   const volverAPrincipal = () => setVista('principal');
 
-  if (loading) return <div className="fantasyfc-container"><h1>FANTASY FC</h1><p>Cargando...</p></div>;
+  if (loading) return (
+    <div className="fantasyfc-container">
+      <h1>FANTASY FC</h1>
+      <div className="loading-spinner"></div>
+    </div>
+  );
 
   return (
     <div className="fantasyfc-container">
@@ -231,6 +287,11 @@ const Fantasyfc = ({ user }) => {
           <div className="user-stats">
             <p><strong>Mis puntos:</strong> {userData.puntos}</p>
             <p><strong>Mi presupuesto:</strong> ${userData.presupuesto}M</p>
+            {!userData.liga && (
+              <button className="crear-liga-btn" onClick={handleCrearLiga}>
+                Crear mi liga
+              </button>
+            )}
           </div>
         </>
       )}
@@ -248,9 +309,15 @@ const Fantasyfc = ({ user }) => {
               </button>
             </>
           ) : (
-            <button className="menu-btn" onClick={handleCrearLiga}>
-              Crear liga
-            </button>
+            <>
+              <h2>No tienes una liga creada</h2>
+              <button className="menu-btn" onClick={handleCrearLiga}>
+                Crear liga
+              </button>
+              <button className="menu-btn volver-btn" onClick={volverAPrincipal}>
+                Regresar
+              </button>
+            </>
           )}
         </div>
       )}
@@ -286,63 +353,70 @@ const Fantasyfc = ({ user }) => {
       {vista === 'comprar' && (
         <>
           <div className="filtro-container">
-            <div className="filtro-posicion">
-              <label>Filtrar por posición:</label>
-              <select 
-                value={filtroPosicion} 
-                onChange={(e) => setFiltroPosicion(e.target.value)}
-                className="select-posicion"
-              >
-                <option value="todos">Todos</option>
-                <option value="Delantero">Delantero</option>
-                <option value="Mediocampista">Mediocampista</option>
-                <option value="Portero">Portero</option>
-                <option value="Defensa">Defensa</option>
-                <option value="Lateral">Lateral</option>
-              </select>
-            </div>
-            
-            <div className="filtro-orden">
-              <button className="menu-btn" onClick={() => aplicarFiltro('valor-alto')}>
-                Valor Alto
-              </button>
-              <button className="menu-btn" onClick={() => aplicarFiltro('valor-bajo')}>
-                Valor Bajo
-              </button>
-              <button className="menu-btn" onClick={() => aplicarFiltro('puntos-altos')}>
-                Puntos Altos
-              </button>
-              <button className="menu-btn" onClick={() => aplicarFiltro('puntos-bajos')}>
-                Puntos Bajos
-              </button>
+            <div className="filtro-botones">
+              <h3>Filtrar por posición:</h3>
+              <div className="botones-filtro">
+                {['Delantero', 'Portero', 'Mediocampista', 'Defensa', 'Lateral'].map(pos => (
+                  <button
+                    key={pos}
+                    className={`filtro-btn ${filtrosActivos.posicion === pos ? 'activo' : ''}`}
+                    onClick={() => manejarFiltro(pos, 'posicion')}
+                  >
+                    {pos}
+                  </button>
+                ))}
+              </div>
+              
+              <h3>Ordenar por:</h3>
+              <div className="botones-filtro">
+                {['Valor Alto', 'Valor Bajo', 'Puntos Altos', 'Puntos Bajos'].map(orden => {
+                  const tipo = orden.toLowerCase().replace(' ', '-');
+                  return (
+                    <button
+                      key={tipo}
+                      className={`filtro-btn ${filtrosActivos.orden === tipo ? 'activo' : ''}`}
+                      onClick={() => manejarFiltro(tipo, 'orden')}
+                    >
+                      {orden}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           <div className="jugadores-lista">
-            {jugadores.map((jugador) => (
-              <div className="player-card" key={jugador.id}>
-                <div className="player-header">
-                  <img 
-                    src={`https://flagcdn.com/w40/${jugador.bandera}.png`} 
-                    className="player-flag" 
-                    alt={`Bandera de ${jugador.bandera}`}
-                  />
+            {jugadores.length > 0 ? (
+              jugadores.map((jugador) => (
+                <div className="player-card" key={jugador.id}>
+                  <div className="player-header">
+                    <img 
+                      src={`https://flagcdn.com/w40/${jugador.bandera}.png`} 
+                      className="player-flag" 
+                      alt={`Bandera de ${jugador.bandera}`}
+                      onError={(e) => { e.target.src = 'https://flagcdn.com/w40/us.png'; }}
+                    />
+                  </div>
+                  <h2>{jugador.nombre}</h2>
+                  <div className="player-stats">
+                    <p><strong>Liga:</strong> {jugador.liga}</p>
+                    <p><strong>Posición:</strong> {jugador.posicion}</p>
+                    <p><strong>Puntos:</strong> ⭐ {jugador.puntos}</p>
+                    <p><strong>Valor:</strong> ${jugador.valor}M</p>
+                  </div>
+                  <button 
+                    className="menu-btn" 
+                    onClick={() => setConfirmarCompra({ mostrar: true, jugador })}
+                  >
+                    Comprar
+                  </button>
                 </div>
-                <h2>{jugador.nombre}</h2>
-                <div className="player-stats">
-                  <p><strong>Liga:</strong> {jugador.liga}</p>
-                  <p><strong>Posición:</strong> {jugador.posicion}</p>
-                  <p><strong>Puntos:</strong> ⭐ {jugador.puntos}</p>
-                  <p><strong>Valor:</strong> ${jugador.valor}M</p>
-                </div>
-                <button 
-                  className="menu-btn" 
-                  onClick={() => setConfirmarCompra({ mostrar: true, jugador })}
-                >
-                  Comprar
-                </button>
+              ))
+            ) : (
+              <div className="no-jugadores">
+                <p>No hay jugadores disponibles con estos filtros</p>
               </div>
-            ))}
+            )}
           </div>
           
           <button className="menu-btn volver-btn" onClick={volverAPrincipal}>
@@ -355,24 +429,34 @@ const Fantasyfc = ({ user }) => {
         <>
           <h2>Mis jugadores</h2>
           <div className="jugadores-lista">
-            {userData.misJugadores.map((jugador) => (
-              <div className="player-card" key={jugador.id}>
-                <div className="player-header">
-                  <img 
-                    src={`https://flagcdn.com/w40/${jugador.bandera}.png`} 
-                    className="player-flag" 
-                    alt={`Bandera de ${jugador.bandera}`}
-                  />
+            {userData.misJugadores.length > 0 ? (
+              userData.misJugadores.map((jugador) => (
+                <div className="player-card" key={jugador.id}>
+                  <div className="player-header">
+                    <img 
+                      src={`https://flagcdn.com/w40/${jugador.bandera}.png`} 
+                      className="player-flag" 
+                      alt={`Bandera de ${jugador.bandera}`}
+                      onError={(e) => { e.target.src = 'https://flagcdn.com/w40/us.png'; }}
+                    />
+                  </div>
+                  <h2>{jugador.nombre}</h2>
+                  <div className="player-stats">
+                    <p><strong>Liga:</strong> {jugador.liga}</p>
+                    <p><strong>Posición:</strong> {jugador.posicion}</p>
+                    <p><strong>Puntos:</strong> ⭐ {jugador.puntos}</p>
+                    <p><strong>Valor:</strong> ${jugador.valor}M</p>
+                  </div>
                 </div>
-                <h2>{jugador.nombre}</h2>
-                <div className="player-stats">
-                  <p><strong>Liga:</strong> {jugador.liga}</p>
-                  <p><strong>Posición:</strong> {jugador.posicion}</p>
-                  <p><strong>Puntos:</strong> ⭐ {jugador.puntos}</p>
-                  <p><strong>Valor:</strong> ${jugador.valor}M</p>
-                </div>
+              ))
+            ) : (
+              <div className="no-jugadores">
+                <p>Aún no tienes jugadores en tu equipo</p>
+                <button className="menu-btn" onClick={() => setVista('comprar')}>
+                  Ir a comprar jugadores
+                </button>
               </div>
-            ))}
+            )}
           </div>
           
           <button className="menu-btn volver-btn" onClick={volverAPrincipal}>
@@ -408,7 +492,17 @@ const Fantasyfc = ({ user }) => {
         <button className="menu-btn" onClick={() => setVista('misJugadores')}>
           Mis jugadores
         </button>
-        <button className="menu-btn" onClick={() => setVista('comprar')}>
+        <button 
+          className="menu-btn" 
+          onClick={() => {
+            if (!userData.liga) {
+              setError("Debes crear una liga antes de comprar jugadores");
+              setVista('crearLiga');
+            } else {
+              setVista('comprar');
+            }
+          }}
+        >
           Comprar jugadores
         </button>
         <button className="menu-btn" onClick={() => setVista('vender')}>
