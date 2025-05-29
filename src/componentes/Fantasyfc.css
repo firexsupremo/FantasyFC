@@ -1,4 +1,6 @@
 /* Fuente y Fondo */
+/* Fantasyfc.css */
+
 .fantasyfc-container {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(135deg, #f0f0f0 0%, #9ef883 100%);
@@ -16,7 +18,7 @@
   text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-
+/* Player Card */
 .player-card {
   background: white;
   border-radius: 15px;
@@ -112,13 +114,13 @@
 
 .menu-btn {
   background: linear-gradient(to bottom, #2e7d32, #1b5e20);
-  color: rgb(255, 255, 255);
+  color: white;
   border: none;
   padding: 15px;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
@@ -147,14 +149,113 @@ strong {
   margin-bottom: 15px;
 }
 
-
-
 .volver-btn {
   background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
-  margin-bottom: 20px;
-  width: 3%;
+  margin-top: 20px;
+  width: auto;
 }
 
 .volver-btn:hover {
   background: linear-gradient(to bottom, #5a6268, #4a5258) !important;
+}
+
+/* Error Message */
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px auto;
+  max-width: 300px;
+}
+
+/* Modal de Confirmación */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 350px;
+  width: 90%;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.botones-modal {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Filtros */
+.filtro-container {
+  background: rgba(255,255,255,0.8);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px auto;
+  max-width: 400px;
+}
+
+.filtro-posicion {
+  margin-bottom: 15px;
+}
+
+.filtro-posicion label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.select-posicion {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filtro-orden {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Lista de Jugadores */
+.jugadores-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Botón de Logout */
+.logout-btn {
+  margin-top: 30px;
+  background: linear-gradient(to bottom, #d32f2f, #b71c1c) !important;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(to bottom, #b71c1c, #8e0000) !important;
+}
+
+/* Botones del Formulario */
+.botones-formulario {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }

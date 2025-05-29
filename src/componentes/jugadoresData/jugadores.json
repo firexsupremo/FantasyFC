@@ -1,0 +1,272 @@
+[
+  {
+    "id": 1,
+    "nombre": "Erling Haaland",
+    "bandera": "no",
+    "liga": "Premier League",
+    "posicion": "Delantero",
+    "puntos": 28,
+    "valor": 180
+  },
+  {
+    "id": 2,
+    "nombre": "Kevin De Bruyne",
+    "bandera": "be",
+    "liga": "Premier League",
+    "posicion": "Mediocampista",
+    "puntos": 18,
+    "valor": 120
+  },
+  {
+    "id": 3,
+    "nombre": "Thibaut Courtois",
+    "bandera": "be",
+    "liga": "La Liga",
+    "posicion": "Portero",
+    "puntos": 15,
+    "valor": 90
+  },
+  {
+    "id": 4,
+    "nombre": "Virgil van Dijk",
+    "bandera": "nl",
+    "liga": "Premier League",
+    "posicion": "Defensa",
+    "puntos": 12,
+    "valor": 80
+  },
+  {
+    "id": 5,
+    "nombre": "Trent Alexander-Arnold",
+    "bandera": "gb",
+    "liga": "Premier League",
+    "posicion": "Lateral",
+    "puntos": 14,
+    "valor": 85
+  },
+  {
+    "id": 6,
+    "nombre": "Kylian Mbappé",
+    "bandera": "fr",
+    "liga": "Ligue 1",
+    "posicion": "Delantero",
+    "puntos": 25,
+    "valor": 200
+  },
+  {
+    "id": 7,
+    "nombre": "Robert Lewandowski",
+    "bandera": "pl",
+    "liga": "La Liga",
+    "posicion": "Delantero",
+    "puntos": 23,
+    "valor": 150
+  },
+  {
+    "id": 8,
+    "nombre": "Manuel Neuer",
+    "bandera": "de",
+    "liga": "Bundesliga",
+    "posicion": "Portero",
+    "puntos": 14,
+    "valor": 70
+  },
+  {
+    "id": 9,
+    "nombre": "Rúben Dias",
+    "bandera": "pt",
+    "liga": "Premier League",
+    "posicion": "Defensa",
+    "puntos": 11,
+    "valor": 75
+  },
+  {
+    "id": 10,
+    "nombre": "Jordi Alba",
+    "bandera": "es",
+    "liga": "La Liga",
+    "posicion": "Lateral",
+    "puntos": 10,
+    "valor": 65
+  },
+  {
+    "id": 11,
+    "nombre": "Lionel Messi",
+    "bandera": "ar",
+    "liga": "MLS",
+    "posicion": "Delantero",
+    "puntos": 20,
+    "valor": 120
+  },
+  {
+    "id": 12,
+    "nombre": "Mohamed Salah",
+    "bandera": "eg",
+    "liga": "Premier League",
+    "posicion": "Delantero",
+    "puntos": 19,
+    "valor": 110
+  },
+  {
+    "id": 13,
+    "nombre": "Joshua Kimmich",
+    "bandera": "de",
+    "liga": "Bundesliga",
+    "posicion": "Mediocampista",
+    "puntos": 16,
+    "valor": 95
+  },
+  {
+    "id": 14,
+    "nombre": "Jan Oblak",
+    "bandera": "si",
+    "liga": "La Liga",
+    "posicion": "Portero",
+    "puntos": 13,
+    "valor": 80
+  },
+  {
+    "id": 15,
+    "nombre": "Marquinhos",
+    "bandera": "br",
+    "liga": "Ligue 1",
+    "posicion": "Defensa",
+    "puntos": 10,
+    "valor": 70
+  },
+  {
+    "id": 16,
+    "nombre": "Andrew Robertson",
+    "bandera": "gb",
+    "liga": "Premier League",
+    "posicion": "Lateral",
+    "puntos": 12,
+    "valor": 75
+  },
+  {
+    "id": 17,
+    "nombre": "Harry Kane",
+    "bandera": "gb",
+    "liga": "Bundesliga",
+    "posicion": "Delantero",
+    "puntos": 22,
+    "valor": 140
+  },
+  {
+    "id": 18,
+    "nombre": "Bruno Fernandes",
+    "bandera": "pt",
+    "liga": "Premier League",
+    "posicion": "Mediocampista",
+    "puntos": 17,
+    "valor": 100
+  },
+  {
+    "id": 19,
+    "nombre": "Ederson",
+    "bandera": "br",
+    "liga": "Premier League",
+    "posicion": "Portero",
+    "puntos": 12,
+    "valor": 75
+  },
+  {
+    "id": 20,
+    "nombre": "Sergio Ramos",
+    "bandera": "es",
+    "liga": "La Liga",
+    "posicion": "Defensa",
+    "puntos": 9,
+    "valor": 60
+  },
+  {
+    "id": 21,
+    "nombre": "Achraf Hakimi",
+    "bandera": "ma",
+    "liga": "Ligue 1",
+    "posicion": "Lateral",
+    "puntos": 13,
+    "valor": 80
+  },
+  {
+    "id": 22,
+    "nombre": "Vinicius Jr",
+    "bandera": "br",
+    "liga": "La Liga",
+    "posicion": "Delantero",
+    "puntos": 18,
+    "valor": 130
+  },
+  {
+    "id": 23,
+    "nombre": "Bernardo Silva",
+    "bandera": "pt",
+    "liga": "Premier League",
+    "posicion": "Mediocampista",
+    "puntos": 15,
+    "valor": 90
+  },
+  {
+    "id": 24,
+    "nombre": "Marc-André ter Stegen",
+    "bandera": "de",
+    "liga": "La Liga",
+    "posicion": "Portero",
+    "puntos": 14,
+    "valor": 85
+  },
+  {
+    "id": 25,
+    "nombre": "Raphaël Varane",
+    "bandera": "fr",
+    "liga": "Premier League",
+    "posicion": "Defensa",
+    "puntos": 8,
+    "valor": 55
+  },
+  {
+    "id": 26,
+    "nombre": "Theo Hernández",
+    "bandera": "fr",
+    "liga": "Serie A",
+    "posicion": "Lateral",
+    "puntos": 11,
+    "valor": 70
+  },
+  {
+    "id": 27,
+    "nombre": "Victor Osimhen",
+    "bandera": "ng",
+    "liga": "Serie A",
+    "posicion": "Delantero",
+    "puntos": 21,
+    "valor": 150
+  },
+  {
+    "id": 28,
+    "nombre": "Federico Valverde",
+    "bandera": "uy",
+    "liga": "La Liga",
+    "posicion": "Mediocampista",
+    "puntos": 14,
+    "valor": 85
+  },
+  {
+    "id": 29,
+    "nombre": "Mike Maignan",
+    "bandera": "fr",
+    "liga": "Serie A",
+    "posicion": "Portero",
+    "puntos": 13,
+    "valor": 80
+  },
+  {
+    "id": 30,
+    "nombre": "Ronald Araújo",
+    "bandera": "uy",
+    "liga": "La Liga",
+    "posicion": "Defensa",
+    "puntos": 9,
+    "valor": 65
+  }
+]
