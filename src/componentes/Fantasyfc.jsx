@@ -55,7 +55,7 @@ const Fantasyfc = ({ user }) => {
           localStorage.setItem(`fantasyfc-data-${user.email}`, JSON.stringify(datosUsuario));
         }
       } catch (error) {
-        setError("Error al cargar datos del usuario");
+        setError("");
         console.error(error);
       }
     };
