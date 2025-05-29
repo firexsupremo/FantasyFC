@@ -97,7 +97,7 @@ useEffect(() => {
 
       console.log('Datos guardados exitosamente:', data);
     } catch (error) {
-      console.error("Error al guardar datos:", {
+      console.error("", {
         message: error.message || 'Error desconocido',
         details: error.details || 'No hay detalles adicionales',
         code: error.code || 'Código no disponible'
