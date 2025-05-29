@@ -151,8 +151,8 @@ strong {
 
 .volver-btn {
   background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
-  margin-bottom: 15px;
-  width: 100%;
+  margin-bottom: 20px;
+  width: 3%;
 }
 
 .volver-btn:hover {
