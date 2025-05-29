@@ -67,30 +67,50 @@ const Fantasyfc = ({ user }) => {
   }, [user]);
 
   // Guardar datos del usuario al cambiar
-  useEffect(() => {
-    const guardarDatosUsuario = async () => {
-      try {
-        localStorage.setItem(`fantasyfc-data-${user.email}`, JSON.stringify(userData));
-        
-        const { error } = await supabase
-          .from('usuarios')
-          .upsert({
-            email: user.email,
-            datos: userData,
-            updated_at: new Date()
-          });
-        
-        if (error) throw error;
-      } catch (error) {
-        console.error("Error al guardar datos:", error);
+ // Guardar datos del usuario al cambiar
+useEffect(() => {
+  const guardarDatosUsuario = async () => {
+    if (!user) return;
+
+    try {
+      // 1. Guardar en localStorage
+      localStorage.setItem(`fantasyfc-data-${user.email}`, JSON.stringify(userData));
+      
+      // 2. Guardar en Supabase
+      const { data, error } = await supabase
+        .from('usuarios')
+        .upsert({
+          email: user.email,
+          datos: userData,
+          updated_at: new Date().toISOString()
+        })
+        .select();
+
+      if (error) {
+        throw {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        };
       }
-    };
 
-    if (user) {
-      guardarDatosUsuario();
+      console.log('Datos guardados exitosamente:', data);
+    } catch (error) {
+      console.error("Error al guardar datos:", {
+        message: error.message || 'Error desconocido',
+        details: error.details || 'No hay detalles adicionales',
+        code: error.code || 'Código no disponible'
+      });
+      
+      setError(`Error al guardar: ${error.message || 'Por favor intenta más tarde'}`);
     }
-  }, [userData, user]);
+  };
 
+  guardarDatosUsuario();
+}, [userData, user]);
+
+  
   // Guardar vista actual
   useEffect(() => {
     localStorage.setItem('fantasyfc-vista', vista);
