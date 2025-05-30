@@ -67,7 +67,7 @@ const Fantasyfc = ({ user }) => {
   }, [user]);
 
   // Guardar datos del usuario al cambiar
- // Guardar datos del usuario al cambiar
+ 
 useEffect(() => {
   const guardarDatosUsuario = async () => {
     if (!user) return;
@@ -103,10 +103,8 @@ useEffect(() => {
         code: error.code || 'Código no disponible'
       });
       
-      setError(`Error al guardar: ${error.message || 'Por favor intenta más tarde'}`);
     }
-  };
-
+  } 
   guardarDatosUsuario();
 }, [userData, user]);
 
